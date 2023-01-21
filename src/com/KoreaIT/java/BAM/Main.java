@@ -8,6 +8,7 @@ public class Main {
 		
 		Scanner sc = new Scanner(System.in);
 		
+		
 		String cmd =  sc.nextLine();
 		
 		System.out.println("입력된 명령어 : " + cmd);
