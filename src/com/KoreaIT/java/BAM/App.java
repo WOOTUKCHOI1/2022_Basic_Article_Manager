@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.KoreaIT.java.BAM.controller.ArticleController;
+import com.KoreaIT.java.BAM.controller.MemberController;
 import com.KoreaIT.java.BAM.dto.Article;
 import com.KoreaIT.java.BAM.dto.Member;
 import com.KoreaIT.java.BAM.util.Util;
@@ -19,11 +21,13 @@ private List<Member> members;
 	public void run() {
 		
 		System.out.println("== 프로그램 시작 ==");
+		
 		makeTestData();
+		
 		Scanner sc = new Scanner(System.in);
 		
-		int lastArticleId = 0;
-		
+		MemberController memberController = new MemberController(members, sc);
+		ArticleController articleController = new ArticleController();
 		
 		while(true) {
 			
@@ -34,6 +38,7 @@ private List<Member> members;
 				System.out.println("명령어를 입력해주세요.");
 				continue;
 			}
+			
 			if(cmd.equals("exit")) {
 				break;
 			}
@@ -73,7 +78,6 @@ private List<Member> members;
 				
 			}else if(cmd.equals("article write")) {
 				int id = articles.size() + 1;
-				lastArticleId = id;
 				String regDate = Util.getNowDateStr();
 				System.out.printf("제목 : ");
 				String title = sc.nextLine();
@@ -83,49 +87,9 @@ private List<Member> members;
 				Article article = new Article(id,regDate,title,body);
 				
 				articles.add(article);
-				System.out.printf("%d번 글이 생성되었습니다\n", lastArticleId);
+				System.out.printf("%d번 글이 생성되었습니다\n", id);
 			}else if(cmd.equals("member join")) {
-				int id = articles.size() + 1;
-				String regDate = Util.getNowDateStr();
-
-				String loginId = null;
-				while(true) {
-					System.out.printf("로그인 아이디 : ");
-					loginId = sc.nextLine();
-					
-					if(loginIdChk(loginId) == false) {
-						System.out.printf("%s은(는) 이미 사용중인 아이디 입니다.\n", loginId);
-						continue;
-					}
-					System.out.printf("%s은(는) 사용가능한 아이디입니다.\n", loginId);
-					break;
-				}
-				
-				
-				String loginPw = null;
-				String loginPwChk = null;
-				while(true) {					
-					System.out.printf("로그인 비밀번호 : ");
-					loginPw = sc.nextLine();
-					System.out.printf("비밀번호 확인 : ");
-					loginPwChk = sc.nextLine();
-					
-					if(loginPw.equals(loginPwChk) == false) {
-						System.out.println("비밀번호를 다시 입력해주세요");
-						continue;
-					}
-					break;
-				}
-				
-				
-				System.out.printf("이름 : ");
-				String name = sc.nextLine();
-				
-				Member member = new Member(id,regDate,loginId,loginPw,name);
-				
-				members.add(member);
-				
-				System.out.printf("%s회원님 환영합니다\n", loginId);
+				memberController.doJoin();
 				
 			}else if(cmd.startsWith("article detail ")){
 				String[] cmdBits = cmd.split(" ");
@@ -191,25 +155,7 @@ private List<Member> members;
 		sc.close();
 	}
 
-	private boolean loginIdChk(String loginId) {
-		int index = getMemberIndexByLoginId(loginId);
-		
-		if(index == -1) {
-			return true;
-		}
-		return false;
-	}
-	private int getMemberIndexByLoginId(String loginId) {
-		int i = 0;
-		for(Member member : members) {
-			if(member.loginId.equals(loginId)) {
-				return i;
-			}
-			i++;
-		}
-		
-		return -1;
-	}
+	
 	private int getArticleIndexById(int id) {
 		int i = 0;
 		for(Article article : articles) {
