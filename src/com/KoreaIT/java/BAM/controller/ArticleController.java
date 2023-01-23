@@ -122,12 +122,24 @@ public class ArticleController extends Controller {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
+		
+		String writerName = null;
+
+		List<Member> members = Container.memberDao.members;
+
+		for(Member member : members) {
+			if(foundArticle.memberId == member.id) {
+				writerName = member.name;
+				break;
+			}
+		}
 
 		foundArticle.addViewCnt();
 
 		System.out.printf("번호 : %d\n", foundArticle.id);
 		System.out.printf("날짜 : %s\n", foundArticle.regDate);
-		System.out.printf("작성자 : %s\n", foundArticle.memberId);
+		//System.out.printf("작성자 : %s\n", foundArticle.memberId);
+		System.out.printf("작성자 : %s\n", writerName);
 		System.out.printf("제목 : %s\n", foundArticle.title);
 		System.out.printf("내용 : %s\n", foundArticle.body);
 		System.out.printf("조회 : %d\n", foundArticle.viewCnt);
