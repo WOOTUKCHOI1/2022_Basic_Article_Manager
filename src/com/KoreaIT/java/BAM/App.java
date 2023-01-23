@@ -36,14 +36,34 @@ private List<Article> articles;
 			}
 			
 			
-			if(cmd.equals("article list")) {
+			if(cmd.startsWith("article list")) {
 				if(articles.size() == 0) {
 					System.out.println("게시글이 없습니다.");
 					continue;
 				}
+				
+				List<Article> forPrintArticles = articles;
+				
+				String searchKeyword = cmd.substring("article list".length()).trim();
+				
+				if(searchKeyword.length() > 0) {
+					System.out.printf("검색어 : " + searchKeyword);
+					forPrintArticles = new ArrayList<>();
+					
+					for(Article article : articles) {
+						if(article.title.contains(searchKeyword)) {
+							forPrintArticles.add(article);
+						}
+					}
+					
+					if(forPrintArticles.size() == 0) {
+						System.out.println("검색결과가 없습니다.");
+						continue;
+					}
+				}
 				System.out.println("번호	|	제목		|	날짜				|	조회");
-				for(int i = articles.size()-1; i >= 0; i--) {
-					Article article = articles.get(i);
+				for(int i = forPrintArticles.size()-1; i >= 0; i--) {
+					Article article = forPrintArticles.get(i);
 					
 					System.out.printf("%d	|	%s		|	%s		|	%d\n", article.id, article.title, article.regDate, article.viewCnt);
 				}
