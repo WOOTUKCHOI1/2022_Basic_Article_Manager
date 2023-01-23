@@ -14,6 +14,7 @@ private List<Member> members;
 	
 	App() {
 		articles = new ArrayList<>();
+		members = new ArrayList<>();
 	}
 	public void run() {
 		
@@ -85,21 +86,47 @@ private List<Member> members;
 				System.out.printf("%d번 글이 생성되었습니다\n", lastArticleId);
 			}else if(cmd.equals("member join")) {
 				int id = articles.size() + 1;
-				lastArticleId = id;
 				String regDate = Util.getNowDateStr();
-				System.out.printf("로그인 아이디 : ");
-				String loginId = sc.nextLine();
-				System.out.printf("로그인 비밀번호 : ");
-				String loginPw = sc.nextLine();
-				System.out.printf("비밀번호 확인 : ");
-				String loginPwChk = sc.nextLine();
+
+				String loginId = null;
+				while(true) {
+					System.out.printf("로그인 아이디 : ");
+					loginId = sc.nextLine();
+					
+					if(loginIdChk(loginId) == false) {
+						System.out.printf("%s은(는) 이미 사용중인 아이디 입니다.\n", loginId);
+						continue;
+					}
+					System.out.printf("%s은(는) 사용가능한 아이디입니다.\n", loginId);
+					break;
+				}
+				
+				
+				String loginPw = null;
+				String loginPwChk = null;
+				while(true) {					
+					System.out.printf("로그인 비밀번호 : ");
+					loginPw = sc.nextLine();
+					System.out.printf("비밀번호 확인 : ");
+					loginPwChk = sc.nextLine();
+					
+					if(loginPw.equals(loginPwChk) == false) {
+						System.out.println("비밀번호를 다시 입력해주세요");
+						continue;
+					}
+					break;
+				}
+				
+				
 				System.out.printf("이름 : ");
 				String name = sc.nextLine();
 				
 				Member member = new Member(id,regDate,loginId,loginPw,name);
 				
 				members.add(member);
+				
 				System.out.printf("%s회원님 환영합니다\n", loginId);
+				
 			}else if(cmd.startsWith("article detail ")){
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
@@ -164,6 +191,25 @@ private List<Member> members;
 		sc.close();
 	}
 
+	private boolean loginIdChk(String loginId) {
+		int index = getMemberIndexByLoginId(loginId);
+		
+		if(index == -1) {
+			return true;
+		}
+		return false;
+	}
+	private int getMemberIndexByLoginId(String loginId) {
+		int i = 0;
+		for(Member member : members) {
+			if(member.loginId.equals(loginId)) {
+				return i;
+			}
+			i++;
+		}
+		
+		return -1;
+	}
 	private int getArticleIndexById(int id) {
 		int i = 0;
 		for(Article article : articles) {
