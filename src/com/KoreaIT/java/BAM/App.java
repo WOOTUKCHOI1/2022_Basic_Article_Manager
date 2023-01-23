@@ -1,55 +1,50 @@
 package com.KoreaIT.java.BAM;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import com.KoreaIT.java.BAM.controller.ArticleController;
 import com.KoreaIT.java.BAM.controller.Controller;
 import com.KoreaIT.java.BAM.controller.MemberController;
-import com.KoreaIT.java.BAM.dto.Article;
-import com.KoreaIT.java.BAM.dto.Member;
-import com.KoreaIT.java.BAM.util.Util;
 
 public class App {
-private List<Article> articles;
-private List<Member> members;
-	
-	App() {
-		articles = new ArrayList<>();
-		members = new ArrayList<>();
-	}
+
 	public void run() {
-		
+
 		System.out.println("== 프로그램 시작 ==");
 		
-		makeTestData();
-		
 		Scanner sc = new Scanner(System.in);
+
+		MemberController memberController = new MemberController(sc);
+		ArticleController articleController = new ArticleController(sc);
 		
-		MemberController memberController = new MemberController(members, sc);
-		ArticleController articleController = new ArticleController(articles, sc);
-		
-		while(true) {
-			
+		articleController.makeTestData();
+		memberController.makeTestData();
+
+		while (true) {
+
 			System.out.printf("명령어) ");
 			String cmd = sc.nextLine().trim();
-			if(cmd.equals("exit")) {
+
+			if (cmd.length() == 0) {
+				System.out.println("명령어를 입력해주세요");
+				continue;
+			}
+
+			if (cmd.equals("exit")) {
 				break;
 			}
-			
-			String[] cmdBits = cmd.split(" "); // article list
 
+			String[] cmdBits = cmd.split(" ");
+			
 			if(cmdBits.length == 1) {
 				System.out.println("명령어를 확인해주세요");
 				continue;
 			}
-
-			String controllerName = cmdBits[0]; // article
-			String methodName = cmdBits[1]; // list
+			
+			String controllerName = cmdBits[0];
+			String methodName = cmdBits[1];
 
 			Controller controller = null;
-			
 			if (controllerName.equals("article")) {
 				controller = articleController;
 			} else if (controllerName.equals("member")) {
@@ -59,23 +54,34 @@ private List<Member> members;
 				continue;
 			}
 			
+//			String actionName = controllerName + "/" + methodName;
+			
+			switch(methodName) {
+			case "write":
+			case "modify":
+			case "delete":
+			case "logout":
+			case "profile":
+				if(Controller.isLogined() == false) {
+					System.out.println("로그인 후 이용해주세요");
+					continue;
+				}
+				break;
+			case "login": 
+			case "join":
+				if(Controller.isLogined()) {
+					System.out.println("로그아웃 후 이용해주세요");
+					continue;
+				}
+				break;
+			}
+			
 			controller.doAction(cmd, methodName);
-//			}
+			
 		}
-		
-		
-		
-		System.out.println("== 프로그램 끝 ==");
-		sc.close();
-	}
 
-	
-	
-	private void makeTestData() {
-		System.out.println("테스트를 위한 게시물 데이터를 생성합니다.");
-		articles.add(new Article(1,Util.getNowDateStr(),"제목1","내용1", 11));
-		articles.add(new Article(2,Util.getNowDateStr(),"제목2","내용2", 22));
-		articles.add(new Article(3,Util.getNowDateStr(),"제목3","내용3", 33));
-		
+		System.out.println("== 프로그램 끝 ==");
+
+		sc.close();
 	}
 }
