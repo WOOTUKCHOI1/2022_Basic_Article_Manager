@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.KoreaIT.java.BAM.dto.Article;
+import com.KoreaIT.java.BAM.dto.Member;
 import com.KoreaIT.java.BAM.util.Util;
 
 public class App {
 private List<Article> articles;
+private List<Member> members;
 	
 	App() {
 		articles = new ArrayList<>();
@@ -81,6 +83,23 @@ private List<Article> articles;
 				
 				articles.add(article);
 				System.out.printf("%d번 글이 생성되었습니다\n", lastArticleId);
+			}else if(cmd.equals("member join")) {
+				int id = articles.size() + 1;
+				lastArticleId = id;
+				String regDate = Util.getNowDateStr();
+				System.out.printf("로그인 아이디 : ");
+				String loginId = sc.nextLine();
+				System.out.printf("로그인 비밀번호 : ");
+				String loginPw = sc.nextLine();
+				System.out.printf("비밀번호 확인 : ");
+				String loginPwChk = sc.nextLine();
+				System.out.printf("이름 : ");
+				String name = sc.nextLine();
+				
+				Member member = new Member(id,regDate,loginId,loginPw,name);
+				
+				members.add(member);
+				System.out.printf("%s회원님 환영합니다\n", loginId);
 			}else if(cmd.startsWith("article detail ")){
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
